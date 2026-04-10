@@ -1,0 +1,101 @@
+{
+    "bug_summary": {
+        "properties": {
+            "symptoms": {
+                "description": "Batch processor crashes halfway when encountering a bad log format.",
+                "title": "Symptoms",
+                "type": "string"
+            },
+            "expected_behavior": {
+                "description": "The script should skip completely empty lines or malformed lines, print a warning, and continue to process the valid ones.",
+                "title": "Expected Behavior",
+                "type": "string"
+            },
+            "actual_behavior": {
+                "description": "The entire script abends with an error, skipping the rest of the valid rows in the file.",
+                "title": "Actual Behavior",
+                "type": "string"
+            },
+            "environment": {
+                "description": "Python 3.9+, Windows 10",
+                "title": "Environment",
+                "type": "string"
+            },
+            "prioritized_hypotheses": {
+                "items": [
+                    "Malformed log format causes script to crash.",
+                    "Script does not handle empty lines properly.",
+                    "Batch processor is sensitive to file format issues."
+                ],
+                "title": "Prioritized Hypotheses",
+                "type": "array"
+            }
+        }
+    },
+    "evidence": {
+        "properties": {
+            "error_signature": {
+                "description": "Traceback (most recent call last): File \"C:\\ai-bug-report\\repo\\batch_processor.py\", line 25, in <module> process_batch(sys.argv[1]) File \"C:\\ai-bug-report\\repo\\batch_processor.py\", line 15, in process_batch email = parts[1] IndexError: list index out of range",
+                "title": "Error Signature",
+                "type": "string"
+            },
+            "key_anomalies": [
+                "Malformed log format causes script to crash.",
+                "Script does not handle empty lines properly.",
+                "Batch processor is sensitive to file format issues."
+            ],
+            "correlation": {
+                "description": "The entire script abends with an error, skipping the rest of the valid rows in the file.",
+                "title": "Correlation",
+                "type": "string"
+            }
+        },
+        "required": [
+            "error_signature",
+            "key_anomalies",
+            "correlation"
+        ],
+        "title": "LogAnalysisResult",
+        "type": "object"
+    },
+    "reproduction": {
+        "properties": {
+            "repro_script_path": {
+                "description": "Path to the created repro script.",
+                "title": "Repro Script Path",
+                "type": "string"
+            },
+            "run_command": {
+                "description": "Command used to run the test.",
+                "title": "Run Command",
+                "type": "string"
+            },
+            "outcome": {
+                "description": "Output that demonstrates the crash.",
+                "title": "Outcome",
+                "type": "string"
+            },
+            "is_minimal": {
+                "description": "Is this a minimal reproducible example?",
+                "title": "Is Minimal",
+                "type": "boolean"
+            }
+        }
+    },
+    "root_cause": "Unknown",
+    "confidence": "Unknown",
+    "patch_plan": {
+        "approach": "",
+        "impacted_files": []
+    },
+    "validation_plan": "",
+    "open_questions": {
+        "description": "Consider edge cases where the input data may contain multiple consecutive empty lines or other malformed formats that could cause the script to crash.",
+        "items": [
+            "Handling multiple consecutive empty lines",
+            "Dealing with malformed log formats"
+        ],
+        "title": "Edge Cases",
+        "type": "array"
+    }
+}

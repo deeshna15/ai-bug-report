@@ -1,0 +1,12 @@
+2026-04-10 10:00:01 INFO [system] Initializing batch loader...
+Starting batch processing for data.csv...
+Processed User 1: alice@example.com
+Processed User 2: bob@example.com
+2026-04-10 10:00:02 ERROR [system] Unhandled exception occurred:
+Traceback (most recent call last):
+  File "C:\ai-bug-report\repo\batch_processor.py", line 25, in <module>
+    process_batch(sys.argv[1])
+  File "C:\ai-bug-report\repo\batch_processor.py", line 15, in process_batch
+    email = parts[1]
+IndexError: list index out of range
+2026-04-10 10:00:02 FATAL [system] Aborting due to unexpected exit code 1.
