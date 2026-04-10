@@ -2,6 +2,13 @@
 
 This project is an automated bug investigation system that orchestrates multiple autonomous AI agents to ingest bug reports, analyze stack traces, dynamically write Reproduction scripts via executing python locally, and propose root-cause fixes.
 
+## Approach: Provided Mini-Repo
+
+The system is designed around a **"Provided Mini-Repo"** methodology. Rather than operating purely conceptually, the multi-agent pipeline is fed an actual, contained codebase where an intentionally introduced bug exists.
+* **Small Codebase**: The orchestrator points exactly to a local target directory (`repo/`) containing the buggy application source.
+* **Structured Inputs**: The system parses a user-provided Bug Report (`inputs/bug_report.md`—including steps to reproduce the issue) and corresponding Error Logs (`inputs/error_logs.txt`).
+* **Active Reproduction Environment**: Utilizing local CLI tool integrations, the Agents actively write and run Python test scripts within this repository context to confirm the bug and validate failure scenarios locally before synthesizing a final patch plan.
+
 ## Tech Stack
 
 * **Python 3.9+**: Core system language.
@@ -83,11 +90,11 @@ The system passes context through five specialized autonomous agents:
 
 ## Workflow
 
-1. **Initialization**: The user invokes `main.py` which reads the inputs from disk and spins up the `SystemOrchestrator`.
-2. **Sequential Hand-off**: Context is piped sequentially from one agent's resolution to the next: `Triage -> Log Analyst -> Reproduction -> Fix Planner -> Reviewer`.
-3. **Tool Loop Execution**: When tool-enabled agents (like the Reproduction Agent) generate function call requests, the Orchestrator intercepts them. It leverages local Python implementations (`read_file`, `search_files`, `write_test_script`, `run_test_script`) and injects the output back into the LLM's prompt history.
-4. **Structured Generation**: `pydantic` schemas instruct the LLMs to yield highly predictable JSON. A mock failover gracefully outputs pre-determined dummy data on API timeout or error ensuring pipeline continuity.
-5. **Reporting**: Ultimately, the orchestrator stitches the states of all agent schemas together, summarizing them into the final structured `final_report.json` output.
+1. **System Initialization**: The user invokes `main.py` via CLI, passing the target repository path, the bug report markdown, and the raw system logs. The `SystemOrchestrator` is spun up to manage state.
+2. **Phase 1 - Triage & Log Analysis**: The `TriageAgent` digests the human-written bug report to define symptoms and expected behaviors. Its structured output is handed to the `LogAnalystAgent`, which correlates those symptoms with specific stack traces and anomaly signatures found in the text logs.
+3. **Phase 2 - Active Reproduction**: Equipped with the analytic context and sandboxed tool-calling capabilities (`read_file`, `search_files`, `write_test_script`, `run_test_script`), the `ReproductionAgent` navigates the `repo/` context and drafts a minimal `repro.py` script. The orchestrator physically executes this code via `subprocess` and pipes the terminal output terminal back to the agent until the bug is perfectly replicated.
+4. **Phase 3 - Root Cause & Planning**: The `FixPlannerAgent` ingests the confirmed execution logs from the reproduction testing and proposes a targeted code patch, specifying exact file modifications and a localized root-cause hypothesis.
+5. **Phase 4 - Review & Compilation**: The `ReviewerAgent` criticizes the final patch for edge cases and safety. The orchestrator then safely serializes the complete analytical journey into `final_report.json`.
 
 ## System Architecture
 
